@@ -1,21 +1,31 @@
 <!doctype html>
 
 <html lang="en">
-<head>
-  <meta charset="utf-8">
+  <head>
 
-  <title>Life</title>
-  <meta name="description" content="Life">
-  <meta name="author" content="God">
+    <title>Life</title>
+    <meta name="description" content="Life">
+    <meta name="author" content="God">
 
   </head>
 
-<body>
+  <body>
+    <div id="grid"></div>
+    <button id="next">Next generation</button>
 
-  <canvas data-processing-sources="anything.pde"></canvas>
-
-
-  <script src="./processing.js"></script>
-<!--  <script src="./life.js"></script> -->
-</body>
+  </body>
+  <script>
+    // Your code here.
+    let grid = document.querySelector('#grid');
+    // create 40 x 40 grid of checkboxes
+    for (let i = 0; i < 40; i++) {
+	let div = document.createElement('div');
+	for (let i = 0; i < 40; i++) {
+	    let checkbox = document.createElement('input');
+	    checkbox.type = 'checkbox';
+	    div.appendChild(checkbox);
+	}
+	grid.appendChild(div);
+    }
+  </script>
 </html>

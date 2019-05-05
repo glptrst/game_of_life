@@ -57,7 +57,7 @@
 
 
 
-     To the find the row and the column of a cell:
+     To find the row and the column of a cell:
 
      row = Math.ceil((cell / n))
 
@@ -65,11 +65,13 @@
 
      */
 
-   // Create life
-   let currentGeneration = life();
 
    // Create grid
    createGrid();
+
+   // Create life
+   let currentGeneration = life();
+   updateGrid(currentGeneration);
 
    let nextButton = document.getElementById('next');
    nextButton.addEventListener('click', () => {
@@ -180,7 +182,7 @@
        }
    }
 
-   // Take generation. Create grid accordingly
+   // Create grid of checkboxes.
    function createGrid(rows = 40) {
        let grid = document.querySelector('#grid');
        grid.innerHTML = ''; // remove old cells
@@ -189,14 +191,13 @@
 	   for (let i = 0; i < rows; i++) {
 	       let checkbox = document.createElement('input');
 	       checkbox.type = 'checkbox';
-	       if (Math.random() > 0.9) checkbox.checked = 'true';
 	       div.appendChild(checkbox);
 	   }
 	   grid.appendChild(div);
        }
    }
 
-   // Return array that represents first random generation
+   // Return first random generation.
    function life(rows = 40) {
        let totalCellNumber = rows * rows; 
        let gen = [];

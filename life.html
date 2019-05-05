@@ -20,19 +20,191 @@
   <body>
     <div id="grid"></div>
     <button id="next">Next generation</button>
+    <button id="auto">Auto</button>
   </body>
   <script>
-    // Your code here.
-    let grid = document.querySelector('#grid');
-    // create 40 x 40 grid of checkboxes
-    for (let i = 0; i < 40; i++) {
-	let div = document.createElement('div');
-	for (let i = 0; i < 40; i++) {
-	    let checkbox = document.createElement('input');
-	    checkbox.type = 'checkbox';
-	    div.appendChild(checkbox);
-	}
-	grid.appendChild(div);
-    }
+    /* 
+     Generations are represented with arrays of 1s and 0s, where 1 is a live
+     cell and 0 a dead cell.
+     
+     Generations are displayed in a grid of checkboxes, where a checked checkbox
+     is a live cell and an unchecked checkbox is a dead cell.
+
+     Rules:
+     Any live cell with fewer than two or more than three live neighbors dies.
+     Any live cell with two or three live neighbors lives on to the next generation.
+     Any dead cell with exactly three live neighbors becomes a live cell.
+     
+     To decide what will happen to a cell we need a method to find its
+     neighbors. This is my method. The following are the neighbors of a cell
+     `cell`, in a grid n x n:
+
+     cell + 1. Unless cell is in the last column.
+
+     cell -1. Unless cell is in the first column.
+
+     cell + (n - 1). Unless cell is in the first column or in the last row.
+
+     cell - (n - 1). Unless cell is in the first row or in the last column.
+
+     cell + n. Unless cell is in the last row.
+
+     cell - n. Unless cell is in the first row.
+
+     cell + (n + 1). Unless cell is in the last column or in the last row.
+
+     cell - (n + 1) Unless cell is in the first row or in the first column.
+
+
+
+     To the find the row and the column of a cell:
+
+     row = Math.ceil((cell / n))
+
+     column = cell - ( (row - 1) x n )
+
+     */
+
+   // Create life
+   let currentGeneration = life();
+
+   // Create grid
+   createGrid();
+
+   let nextButton = document.getElementById('next');
+   nextButton.addEventListener('click', () => {
+       currentGeneration = nextGeneration(currentGeneration);
+       updateGrid(currentGeneration);
+   });
+
+   let autoButton = document.getElementById('auto');
+   autoButton.addEventListener('click', () => {
+       setInterval(() => {
+	   currentGeneration = nextGeneration(currentGeneration);
+	   updateGrid(currentGeneration);
+       }, 200);
+   });
+   
+   // Take current generation and return next generation.
+   function nextGeneration(current, n = 40) {
+       let next = [];
+
+       for (let i = 0; i < current.length; i++) {
+	   let cell = i;
+
+	   let neighbors = [];
+	   let row = Math.ceil(cell / n);
+	   let column = cell - ((row -1) * n);
+	   
+	   if (column === n) { // if it's last column
+	       if (row === n) { // if it's last row
+		   neighborIndexes = [cell -1, cell - n, cell - (n + 1)];
+		   neighborValues = values(current, neighborIndexes);
+		   next.push(updateCell(current[cell], neighborValues));
+	       } else if (row === 1) { // if it's first row
+		   neighborIndexes = [cell -1, cell + (n -1), cell + n];
+		   neighborValues = values(current, neighborIndexes);;
+		   next.push(updateCell(current[cell], neighborValues));
+	       } else {
+		   neighborIndexes = [cell -1, cell + (n - 1), cell + n, cell - n, cell - (n + 1)];
+		   neighborValues = values(current, neighborIndexes);;
+		   next.push(updateCell(current[cell], neighborValues));
+	       }
+	   } else if (column === 1) { // if it's first column
+	       if (row === 1) { // if it's first row
+		   neighborIndexes = [cell + 1, cell + n, cell + (n +1)];
+		   neighborValues = values(current, neighborIndexes);;
+		   next.push(updateCell(current[cell], neighborValues));
+	       } else if (row === n) { // if it's last row
+		   neighborIndexes = [cell + 1, cell - (n - 1), cell - n];
+		   neighborValues = values(current, neighborIndexes);;
+		   next.push(updateCell(current[cell], neighborValues));
+	       } else {
+		   neighborIndexes = [cell + 1, cell - (n -1), cell + n, cell -n, cell + (n + 1)];
+		   neighborValues = values(current, neighborIndexes);;
+		   next.push(updateCell(current[cell], neighborValues));
+	       }
+	   } else {
+	       neighborIndexes = [cell + 1, cell -1, cell + (n -1), cell - (n - 1), cell + n, cell - n,
+				  cell + (n + 1), cell - (n + 1)];
+	       neighborValues = values(current, neighborIndexes);;
+	       next.push(updateCell(current[cell], neighborValues));
+	   }
+       }
+
+       return next;
+   }
+   
+   // Take cell (0 or 1) and array of neighbors (0s and 1s), return updated cell.
+   function updateCell(cell, neighbors) {
+       let liveNeighbors = 0;
+       for (n of neighbors)
+	   if (n === 1)
+	       liveNeighbors++;
+
+       if (cell === 1) {
+	   if (liveNeighbors < 2 || liveNeighbors > 3)
+	       return 0; // cell dies :(
+	   else if (liveNeighbors === 2 || liveNeighbors == 3)
+	       return 1; // cell keeps surviving :)
+       } else if (cell === 0) {
+	   if (liveNeighbors === 3)
+	       return 1; // cell becomes alive :O
+	   else
+	       return 0;
+       }
+   }
+
+   // Take array of values and an array of indexes of those values.
+   // Return array of the values of those indexes.
+   // Example: 
+   // [a, b, c], [0, 2] => [a, c]
+   function values(array, indexes) {
+       let result = [];
+       for (let i = 0; i < indexes.length; i++) {
+	   result.push(array[indexes[i]]);
+       }
+       return result;
+   }
+
+   // Take generation. Change grid accordingly.
+   function updateGrid(generation, rows = 40) {
+       if (generation.length !== rows * rows) console.log('Error 1');
+       let cells = Array.from(document.querySelectorAll('input'));
+       for (let i = 0; i < generation.length; i++) {
+	   if (generation[i] === 1) {
+	       cells[i].checked = 'true';
+	   } else {
+	       cells[i].checked = '';
+	   }
+       }
+   }
+
+   // Take generation. Create grid accordingly
+   function createGrid(rows = 40) {
+       let grid = document.querySelector('#grid');
+       grid.innerHTML = ''; // remove old cells
+       for (let i = 0; i < rows; i++) {
+	   let div = document.createElement('div');
+	   for (let i = 0; i < rows; i++) {
+	       let checkbox = document.createElement('input');
+	       checkbox.type = 'checkbox';
+	       if (Math.random() > 0.9) checkbox.checked = 'true';
+	       div.appendChild(checkbox);
+	   }
+	   grid.appendChild(div);
+       }
+   }
+
+   // Return array that represents first random generation
+   function life(rows = 40) {
+       let totalCellNumber = rows * rows; 
+       let gen = [];
+       for (let i = 0; i < totalCellNumber; i++) {
+	   if (Math.random() > 0.9) gen.push(1);
+	   else gen.push(0);
+       }
+       return gen;
+   }
   </script>
 </html>

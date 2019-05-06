@@ -55,14 +55,6 @@
 
      cell - (n + 1) Unless cell is in the first row or in the first column.
 
-
-
-     To find the row and the column of a cell:
-
-     row = Math.ceil((cell / n))
-
-     column = cell - ( (row - 1) x n )
-
      */
 
 
@@ -86,57 +78,61 @@
 	   updateGrid(currentGeneration);
        }, 200);
    });
-   
-   // Take current generation and return next generation.
+
+   // Take generation, return next generation.
    function nextGeneration(current, n = 40) {
        let next = [];
 
-       for (let i = 0; i < current.length; i++) {
-	   let cell = i;
-
-	   let neighbors = [];
-	   let row = Math.ceil(cell / n);
-	   let column = cell - ((row -1) * n);
-	   
-	   if (column === n) { // if it's last column
-	       if (row === n) { // if it's last row
-		   neighborIndexes = [cell -1, cell - n, cell - (n + 1)];
-		   neighborValues = values(current, neighborIndexes);
-		   next.push(updateCell(current[cell], neighborValues));
-	       } else if (row === 1) { // if it's first row
-		   neighborIndexes = [cell -1, cell + (n -1), cell + n];
+       for (let x = 0; x < n; x++) {
+	   for (let y = 0; y < n; y++) {
+	       let cell = x*n + y;
+	       if (x === n) {
+		   if (y === n) { // if it's last row and last column
+		       neighborIndexes = [cell - 1, cell - n, cell - (n + 1)];
+		       neighborValues = values(current, neighborIndexes);
+		       next.push(updateCell(current[cell], neighborValues));
+		   } else if (y === 0) { // if it's first row and last column
+		       neighborIndexes = [cell -1, cell + (n -1), cell + n];
+		       neighborValues = values(current, neighborIndexes);;
+		       next.push(updateCell(current[cell], neighborValues));
+		   } else { // if it's only last column
+		       neighborIndexes = [cell - 1, cell + (n - 1), cell + n, cell - n, cell - (n + 1)];
+		       neighborValues = values(current, neighborIndexes);;
+		       next.push(updateCell(current[cell], neighborValues));
+		   }
+	       } else if (x === 0) {
+		   if (y === 0) { // if it's first row and first column
+		       neighborIndexes = [cell + 1, cell + n, cell + (n +1)];
+		       neighborValues = values(current, neighborIndexes);;
+		       next.push(updateCell(current[cell], neighborValues));
+		   } else if (y === n) { // if it's last row and first column
+		       neighborIndexes = [cell + 1, cell - (n - 1), cell - n];
+		       neighborValues = values(current, neighborIndexes);;
+		       next.push(updateCell(current[cell], neighborValues));
+		   } else { // if it's first column
+		       neighborIndexes = [cell + 1, cell - (n -1), cell + n, cell - n, cell + (n + 1)];
+		       neighborValues = values(current, neighborIndexes);;
+		       next.push(updateCell(current[cell], neighborValues));
+		   }
+	       } else if (y === n) { // if it's last row
+		   neighborIndexes = [cell + 1, cell -1, cell - (n - 1), cell -n, cell - (n + 1)];
 		   neighborValues = values(current, neighborIndexes);;
 		   next.push(updateCell(current[cell], neighborValues));
-	       } else {
-		   neighborIndexes = [cell -1, cell + (n - 1), cell + n, cell - n, cell - (n + 1)];
+	       } else if (y === 0) { // if it's first row
+		   neighborIndexes = [cell + 1, cell - 1, cell + (n - 1), cell + n, cell + (n + 1)];
+		   neighborValues = values(current, neighborIndexes);;
+		   next.push(updateCell(current[cell], neighborValues));
+	       } else { // if it's neither first/last column, nor first/last row
+		   neighborIndexes = [cell + 1, cell -1, cell + (n - 1), cell - (n - 1), cell + n, cell - n,
+				      cell + (n + 1), cell - (n + 1)];
 		   neighborValues = values(current, neighborIndexes);;
 		   next.push(updateCell(current[cell], neighborValues));
 	       }
-	   } else if (column === 1) { // if it's first column
-	       if (row === 1) { // if it's first row
-		   neighborIndexes = [cell + 1, cell + n, cell + (n +1)];
-		   neighborValues = values(current, neighborIndexes);;
-		   next.push(updateCell(current[cell], neighborValues));
-	       } else if (row === n) { // if it's last row
-		   neighborIndexes = [cell + 1, cell - (n - 1), cell - n];
-		   neighborValues = values(current, neighborIndexes);;
-		   next.push(updateCell(current[cell], neighborValues));
-	       } else {
-		   neighborIndexes = [cell + 1, cell - (n -1), cell + n, cell -n, cell + (n + 1)];
-		   neighborValues = values(current, neighborIndexes);;
-		   next.push(updateCell(current[cell], neighborValues));
-	       }
-	   } else {
-	       neighborIndexes = [cell + 1, cell -1, cell + (n -1), cell - (n - 1), cell + n, cell - n,
-				  cell + (n + 1), cell - (n + 1)];
-	       neighborValues = values(current, neighborIndexes);;
-	       next.push(updateCell(current[cell], neighborValues));
 	   }
        }
-
        return next;
    }
-   
+
    // Take cell (0 or 1) and array of neighbors (0s and 1s), return updated cell.
    function updateCell(cell, neighbors) {
        let liveNeighbors = 0;
@@ -197,7 +193,7 @@
        }
    }
 
-   // Return first random generation.
+   // Return random generation.
    function life(rows = 40) {
        let totalCellNumber = rows * rows; 
        let gen = [];

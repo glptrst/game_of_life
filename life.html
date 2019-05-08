@@ -20,6 +20,7 @@
   <body>
     <div id="grid"></div>
     <button id="next">Next generation</button>
+    <button id="clear">Clear</button>
     <button id="auto">Auto</button>
   </body>
   <script>
@@ -77,6 +78,11 @@
 	   currentGeneration = nextGeneration(currentGeneration);
 	   updateGrid(currentGeneration);
        }, 200);
+   });
+
+   let clearButton = document.getElementById('clear');
+   clearButton.addEventListener('click', () => {
+       clear();
    });
 
    // Take generation, return next generation.
@@ -202,6 +208,16 @@
 	   else gen.push(0);
        }
        return gen;
+   }
+
+   // clear grid
+   function clear(n = 40) {
+       let gen = [];
+       for (let i = 0; i < n*n; i++) {
+	   gen.push(0);
+       }
+       currentGeneration = gen;
+       updateGrid(currentGeneration);
    }
   </script>
 </html>

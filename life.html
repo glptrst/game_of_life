@@ -19,9 +19,10 @@
 
   <body>
     <div id="grid"></div>
-    <button id="next">Next generation</button>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+    <button id="reset">Reset</button>
     <button id="clear">Clear</button>
-    <button id="auto">Auto</button>
   </body>
   <script>
     /* 
@@ -67,14 +68,20 @@
    let currentGeneration = life();
    updateGrid(currentGeneration);
 
-   let nextButton = document.getElementById('next');
-   nextButton.addEventListener('click', () => {
-       currentGeneration = nextGeneration(currentGeneration);
+   let stopButton = document.getElementById('stop');
+   stopButton.addEventListener('click', () => {
+       clearInterval(autoInterval);
+   });
+
+   let resetButton = document.getElementById('reset');
+   resetButton.addEventListener('click', () => {
+       clearInterval(autoInterval);
+       currentGeneration = life();
        updateGrid(currentGeneration);
    });
 
-   let autoButton = document.getElementById('auto');
-   autoButton.addEventListener('click', () => {
+   let startButton = document.getElementById('start');
+   startButton.addEventListener('click', () => {
        autoInterval = setInterval(() => {
 	   currentGeneration = nextGeneration(currentGeneration);
 	   updateGrid(currentGeneration);

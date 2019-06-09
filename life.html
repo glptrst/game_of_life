@@ -59,7 +59,7 @@
 
      */
 
-   let autoInterval;
+   let autoInterval; // it should be always 1 or undefined
 
    // Create grid
    createGrid();
@@ -71,21 +71,25 @@
    let stopButton = document.getElementById('stop');
    stopButton.addEventListener('click', () => {
        clearInterval(autoInterval);
+       autoInterval = undefined;
    });
 
    let resetButton = document.getElementById('reset');
    resetButton.addEventListener('click', () => {
        clearInterval(autoInterval);
+       autoInterval = undefined;
        currentGeneration = life();
        updateGrid(currentGeneration);
    });
 
    let startButton = document.getElementById('start');
    startButton.addEventListener('click', () => {
-       autoInterval = setInterval(() => {
-	   currentGeneration = nextGeneration(currentGeneration);
-	   updateGrid(currentGeneration);
-       }, 200);
+       if (!autoInterval) { // if interval it's not on (it's undefined)
+	   autoInterval = setInterval(() => {
+	       currentGeneration = nextGeneration(currentGeneration);
+	       updateGrid(currentGeneration);
+	   }, 200);
+       }
    });
 
    let clearButton = document.getElementById('clear');
@@ -232,6 +236,7 @@
    // clear grid
    function clear(n = 40) {
        clearInterval(autoInterval);
+       autoInterval = undefined;
        let gen = [];
        for (let i = 0; i < n*n; i++) {
 	   gen.push(0);

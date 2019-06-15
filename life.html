@@ -59,7 +59,7 @@
 
      */
 
-   let autoInterval; // it should be always 1 or undefined
+   let autoInterval; // it should always be 1 or undefined
 
    // Create grid
    createGrid();
@@ -206,19 +206,20 @@
        }
    }
 
+
    // Create grid of checkboxes.
    function createGrid(n = 40) {
        let grid = document.querySelector('#grid');
-       grid.innerHTML = ''; // remove old cells
+
        for (let i = 0; i < n; i++) {
-	   let div = document.createElement('div');
+	   let row = document.createElement('div');
 	   for (let j = 0; j < n; j++) {
 	       let checkbox = document.createElement('input');
 	       checkbox.type = 'checkbox';
-	       checkbox.id = i === 0 ? j : j + (40*i);
-	       div.appendChild(checkbox);
+	       checkbox.id = i === 0 ? j : j + (n*i);
+	       row.appendChild(checkbox);
 	   }
-	   grid.appendChild(div);
+	   grid.appendChild(row);
        }
    }
 
@@ -227,7 +228,7 @@
        let totalCellNumber = rows * rows; 
        let gen = [];
        for (let i = 0; i < totalCellNumber; i++) {
-	   if (Math.random() > 0.9) gen.push(1);
+	   if (Math.random() > 0.7) gen.push(1);
 	   else gen.push(0);
        }
        return gen;

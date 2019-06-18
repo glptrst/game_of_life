@@ -70,11 +70,11 @@ clearButton.addEventListener('click', () => {
     clear();
 });
 
-let GliderGunButton = document.getElementById('gliderGun');
-GliderGunButton.addEventListener('click', () => {
+let gosperGliderGunButton = document.getElementById('gosperGliderGun');
+gosperGliderGunButton.addEventListener('click', () => {
     clearInterval(autoInterval);
     autoInterval = undefined;
-    currentGeneration = createGen(50, gliderGun);
+    currentGeneration = createGen(50, gosperGliderGun);
     updateGrid(currentGeneration);
 });
 

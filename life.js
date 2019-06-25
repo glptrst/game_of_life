@@ -1,3 +1,5 @@
+"use strict";
+
 /* 
    Generations are represented with arrays of 1s and 0s, where 1 is a live
    cell and 0 a dead cell.
@@ -91,6 +93,8 @@ for (let checkbox of checkboxes) {
 // Take generation, return next generation.
 function nextGeneration(current, n = 50) {
     let next = [];
+    let neighborIndexes;
+    let neighborValues;
 
     for (let x = 0; x < n; x++) {
 	for (let y = 0; y < n; y++) {
@@ -145,7 +149,7 @@ function nextGeneration(current, n = 50) {
 // Take cell (0 or 1) and array of neighbors (0s and 1s), return updated cell.
 function updateCell(cell, neighbors) {
     let liveNeighbors = 0;
-    for (n of neighbors)
+    for (let n of neighbors)
 	if (n === 1)
 	    liveNeighbors++;
 

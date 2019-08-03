@@ -16,21 +16,21 @@
    neighbors. This is my method. The following are the neighbors of a cell
    `cell`, in a grid n x n:
 
-   cell + 1. Unless cell is in the last column.
+   cell + 1. Unless cell is in the last column. (x === n -1)
 
-   cell -1. Unless cell is in the first column.
+   cell -1. Unless cell is in the first column. (x === 0)
 
-   cell + (n - 1). Unless cell is in the first column or in the last row.
+   cell + (n - 1). Unless cell is in the first column or in the last row. (x === 0 || y === n - 1)
 
-   cell - (n - 1). Unless cell is in the first row or in the last column.
+   cell - (n - 1). Unless cell is in the first row or in the last column. (y === 0 || x === n - 1)
 
-   cell + n. Unless cell is in the last row.
+   cell + n. Unless cell is in the last row. (y === n - 1)
 
-   cell - n. Unless cell is in the first row.
+   cell - n. Unless cell is in the first row. (y === 0)
 
-   cell + (n + 1). Unless cell is in the last column or in the last row.
+   cell + (n + 1). Unless cell is in the last column or in the last row. (x === n -1 || y === n - 1)
 
-   cell - (n + 1) Unless cell is in the first row or in the first column.
+   cell - (n + 1) Unless cell is in the first row or in the first column. (y === 0 || x === 0)
 
 */
 
@@ -60,10 +60,10 @@ resetButton.addEventListener('click', () => {
 let startButton = document.getElementById('start');
 startButton.addEventListener('click', () => {
     if (!autoInterval) { // if interval it's not on (it's undefined)
-	autoInterval = setInterval(() => {
-	    currentGeneration = nextGeneration(currentGeneration);
-	    updateGrid(currentGeneration);
-	}, 175);
+        autoInterval = setInterval(() => {
+            currentGeneration = nextGeneration(currentGeneration);
+            updateGrid(currentGeneration);
+        }, 175);
     }
 });
 
@@ -83,10 +83,10 @@ gosperGliderGunButton.addEventListener('click', () => {
 let checkboxes = document.querySelectorAll('input');
 for (let checkbox of checkboxes) {
     checkbox.addEventListener('click', (ev) => {
-	if (ev.target.checked) // if cell was dead
-	    currentGeneration[ev.target.id] = 1;
-	else // if cell was live
-	    currentGeneration[ev.target.id] = 0;
+        if (ev.target.checked) // if cell was dead
+            currentGeneration[ev.target.id] = 1;
+        else // if cell was live
+            currentGeneration[ev.target.id] = 0;
     });
 }
 
@@ -96,53 +96,37 @@ function nextGeneration(current, n = 50) {
     let neighborIndexes;
     let neighborValues;
 
-    for (let x = 0; x < n; x++) {
-	for (let y = 0; y < n; y++) {
-	    let cell = x*n + y;
-	    if (x === n) {
-		if (y === n) { // if it's last row and last column
-		    neighborIndexes = [cell - 1, cell - n, cell - (n + 1)];
-		    neighborValues = values(current, neighborIndexes);
-		    next.push(updateCell(current[cell], neighborValues));
-		} else if (y === 0) { // if it's first row and last column
-		    neighborIndexes = [cell -1, cell + (n -1), cell + n];
-		    neighborValues = values(current, neighborIndexes);;
-		    next.push(updateCell(current[cell], neighborValues));
-		} else { // if it's only last column
-		    neighborIndexes = [cell - 1, cell + (n - 1), cell + n, cell - n, cell - (n + 1)];
-		    neighborValues = values(current, neighborIndexes);;
-		    next.push(updateCell(current[cell], neighborValues));
-		}
-	    } else if (x === 0) {
-		if (y === 0) { // if it's first row and first column
-		    neighborIndexes = [cell + 1, cell + n, cell + (n +1)];
-		    neighborValues = values(current, neighborIndexes);;
-		    next.push(updateCell(current[cell], neighborValues));
-		} else if (y === n) { // if it's last row and first column
-		    neighborIndexes = [cell + 1, cell - (n - 1), cell - n];
-		    neighborValues = values(current, neighborIndexes);;
-		    next.push(updateCell(current[cell], neighborValues));
-		} else { // if it's first column
-		    neighborIndexes = [cell + 1, cell - (n -1), cell + n, cell - n, cell + (n + 1)];
-		    neighborValues = values(current, neighborIndexes);;
-		    next.push(updateCell(current[cell], neighborValues));
-		}
-	    } else if (y === n) { // if it's last row
-		neighborIndexes = [cell + 1, cell -1, cell - (n - 1), cell -n, cell - (n + 1)];
-		neighborValues = values(current, neighborIndexes);;
-		next.push(updateCell(current[cell], neighborValues));
-	    } else if (y === 0) { // if it's first row
-		neighborIndexes = [cell + 1, cell - 1, cell + (n - 1), cell + n, cell + (n + 1)];
-		neighborValues = values(current, neighborIndexes);;
-		next.push(updateCell(current[cell], neighborValues));
-	    } else { // if it's neither first/last column, nor first/last row
-		neighborIndexes = [cell + 1, cell -1, cell + (n - 1), cell - (n - 1), cell + n, cell - n,
-				   cell + (n + 1), cell - (n + 1)];
-		neighborValues = values(current, neighborIndexes);;
-		next.push(updateCell(current[cell], neighborValues));
-	    }
-	}
+    for (let y = 0; y < n; y++) {
+        for (let x = 0; x < n; x++) {
+            let cell = y * n + x;
+            if (x === 0) {
+                if (y === 0) {
+                    neighborIndexes = [cell + 1, cell + n, cell + (n + 1)];
+                } else if (y === n - 1) {
+                    neighborIndexes = [cell + 1, cell - (n - 1), cell - n];
+                } else {
+                    neighborIndexes = [cell + 1, cell - (n - 1), cell + n, cell - n, cell + (n + 1)];
+                }
+            } else if (x === n - 1) {
+                if (y === n - 1) {
+                    neighborIndexes = [cell - 1, cell - n, cell - (n + 1)];
+                } else if (y === 0) {
+                    neighborIndexes = [cell - 1, cell + (n - 1), cell + n];
+                } else {
+                    neighborIndexes = [cell - 1, cell + (n - 1), cell + n, cell - n, cell - (n + 1)];
+                }
+            } else if (y === n - 1) {
+                neighborIndexes = [cell + 1, cell - 1, cell - (n - 1), cell - n, cell - (n + 1)];
+            } else if (y === 0) {
+                neighborIndexes = [cell + 1, cell - 1, cell + (n - 1), cell + n, cell + (n + 1)];
+            } else {
+                neighborIndexes = [cell + 1, cell - 1, cell + (n - 1), cell - (n - 1), cell + n, cell - n, cell + (n + 1), cell - (n + 1)];
+            }
+            neighborValues = values(current, neighborIndexes);
+            next.push(updateCell(current[cell], neighborValues));
+        }
     }
+
     return next;
 }
 
@@ -150,19 +134,19 @@ function nextGeneration(current, n = 50) {
 function updateCell(cell, neighbors) {
     let liveNeighbors = 0;
     for (let n of neighbors)
-	if (n === 1)
-	    liveNeighbors++;
+        if (n === 1)
+            liveNeighbors++;
 
     if (cell === 1) {
-	if (liveNeighbors < 2 || liveNeighbors > 3)
-	    return 0; // cell dies :(
-	else if (liveNeighbors === 2 || liveNeighbors == 3)
-	    return 1; // cell keeps surviving :)
+        if (liveNeighbors < 2 || liveNeighbors > 3)
+            return 0; // cell dies :(
+        else if (liveNeighbors === 2 || liveNeighbors == 3)
+            return 1; // cell keeps surviving :)
     } else if (cell === 0) {
-	if (liveNeighbors === 3)
-	    return 1; // cell becomes alive :O
-	else
-	    return 0;
+        if (liveNeighbors === 3)
+            return 1; // cell becomes alive :O
+        else
+            return 0;
     }
 }
 
@@ -173,7 +157,7 @@ function updateCell(cell, neighbors) {
 function values(array, indexes) {
     let result = [];
     for (let i = 0; i < indexes.length; i++) {
-	result.push(array[indexes[i]]);
+        result.push(array[indexes[i]]);
     }
     return result;
 }
@@ -183,11 +167,11 @@ function updateGrid(generation, rows = 50) {
     if (generation.length !== rows * rows) console.log('Error 1');
     let cells = Array.from(document.querySelectorAll('input'));
     for (let i = 0; i < generation.length; i++) {
-	if (generation[i] === 1) {
-	    cells[i].checked = 'true';
-	} else {
-	    cells[i].checked = '';
-	}
+        if (generation[i] === 1) {
+            cells[i].checked = 'true';
+        } else {
+            cells[i].checked = '';
+        }
     }
 }
 
@@ -197,24 +181,24 @@ function createGrid(n = 50) {
     let grid = document.querySelector('#grid');
 
     for (let i = 0; i < n; i++) {
-	let row = document.createElement('div');
-	for (let j = 0; j < n; j++) {
-	    let checkbox = document.createElement('input');
-	    checkbox.type = 'checkbox';
-	    checkbox.id = i === 0 ? j : j + (n*i);
-	    row.appendChild(checkbox);
-	}
-	grid.appendChild(row);
+        let row = document.createElement('div');
+        for (let j = 0; j < n; j++) {
+            let checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = i === 0 ? j : j + (n * i);
+            row.appendChild(checkbox);
+        }
+        grid.appendChild(row);
     }
 }
 
 // Return random generation.
 function life(rows = 50) {
-    let totalCellNumber = rows * rows; 
+    let totalCellNumber = rows * rows;
     let gen = [];
     for (let i = 0; i < totalCellNumber; i++) {
-	if (Math.random() > 0.7) gen.push(1);
-	else gen.push(0);
+        if (Math.random() > 0.7) gen.push(1);
+        else gen.push(0);
     }
     return gen;
 }
@@ -224,8 +208,8 @@ function clear(n = 50) {
     clearInterval(autoInterval);
     autoInterval = undefined;
     let gen = [];
-    for (let i = 0; i < n*n; i++) {
-	gen.push(0);
+    for (let i = 0; i < n * n; i++) {
+        gen.push(0);
     }
     currentGeneration = gen;
     updateGrid(currentGeneration);
@@ -236,23 +220,23 @@ function clear(n = 50) {
 // Inputs are strings of 0s and 1s, white spaces are ignored.
 function createGen(rows, input) {
     if (!input) {
-	let totalCellNumber = rows * rows; 
-	let gen = [];
-	for (let i = 0; i < totalCellNumber; i++) {
-	    if (Math.random() > 0.7) gen.push(1);
-	    else gen.push(0);
-	}
-	return gen;
+        let totalCellNumber = rows * rows;
+        let gen = [];
+        for (let i = 0; i < totalCellNumber; i++) {
+            if (Math.random() > 0.7) gen.push(1);
+            else gen.push(0);
+        }
+        return gen;
     } else {
-	if (rows != input.split('\n')[0].length)
-	    throw new Error('wrong rows for input given');
-	let gen = [];
-	input = input.split('\n').map((r)=> skipSpace(r)).join('');
-	for (let i = 0; i < rows*rows; i++) {
-	    if (input[i] === '0') gen.push(0);
-	    else gen.push(1);
-	}
-	return gen;
+        if (rows != input.split('\n')[0].length)
+            throw new Error('wrong rows for input given');
+        let gen = [];
+        input = input.split('\n').map((r) => skipSpace(r)).join('');
+        for (let i = 0; i < rows * rows; i++) {
+            if (input[i] === '0') gen.push(0);
+            else gen.push(1);
+        }
+        return gen;
     }
 }
 
